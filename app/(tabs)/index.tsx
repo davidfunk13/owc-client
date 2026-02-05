@@ -1,26 +1,25 @@
-import { StyleSheet, View } from 'react-native';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
-import { Screen, Card, ThemedText } from '@/components/ui';
+import type { FC } from "react";
+import { StyleSheet, View } from "react-native";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Screen } from "@/components/Screen/Screen";
+import { Card } from "@/components/Card/Card";
+import { ThemedText } from "@/components/ThemedText/ThemedText";
 
-export default function HomeScreen() {
+const HomeScreen: FC = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
 
   return (
     <Screen scroll>
       <View
-        style={[
-          styles.header,
-          {
-            paddingHorizontal: theme.spacing.lg,
-            paddingTop: theme.spacing.sm,
-            paddingBottom: theme.spacing.lg,
-          },
-        ]}
-      >
+        style={{
+          paddingHorizontal: theme.spacing.lg,
+          paddingTop: theme.spacing.sm,
+          paddingBottom: theme.spacing.lg,
+        }}>
         <ThemedText variant="secondary">Welcome back,</ThemedText>
-        <ThemedText variant="heading">{user?.battletag || 'Player'}</ThemedText>
+        <ThemedText variant="heading">{user?.battletag || "Player"}</ThemedText>
       </View>
 
       <Card style={styles.cardNoTopMargin}>
@@ -53,7 +52,9 @@ export default function HomeScreen() {
         <ThemedText variant="title" style={{ marginBottom: theme.spacing.md }}>
           Recent Activity
         </ThemedText>
-        <ThemedText variant="secondary" style={[styles.placeholder, { marginTop: theme.spacing.sm }]}>
+        <ThemedText
+          variant="secondary"
+          style={[styles.placeholder, { marginTop: theme.spacing.sm }]}>
           No games recorded yet.
         </ThemedText>
         <ThemedText variant="hint" style={[styles.placeholder, { marginTop: theme.spacing.xs }]}>
@@ -62,21 +63,22 @@ export default function HomeScreen() {
       </Card>
     </Screen>
   );
-}
+};
+
+export default HomeScreen;
 
 const styles = StyleSheet.create({
-  header: {},
   cardNoTopMargin: {
     marginTop: 0,
   },
   statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
   statItem: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   placeholder: {
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

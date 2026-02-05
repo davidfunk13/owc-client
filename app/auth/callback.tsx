@@ -1,56 +1,65 @@
-import { useEffect } from 'react';
-import { View, ActivityIndicator, StyleSheet, Platform } from 'react-native';
-import { useLocalSearchParams, router } from 'expo-router';
-import { storage } from '../../lib/storage';
+import type { FC } from "react";
+import { useEffect } from "react";
+import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
+import { storage } from "@/lib/storage";
+import { useTheme } from "@/contexts/ThemeContext";
 
-export default function AuthCallback() {
+const AuthCallback: FC = () => {
   const { token, error } = useLocalSearchParams<{ token?: string; error?: string }>();
+  const { theme } = useTheme();
 
   useEffect(() => {
     const handleCallback = async () => {
-      const isWeb = Platform.OS === 'web';
+      try {
+        const isWeb = Platform.OS === "web";
 
-      if (error) {
-        if (isWeb) {
-          window.location.href = '/';
+        if (error) {
+          if (isWeb) {
+            window.location.href = "/";
+            return;
+          }
+          router.replace("/(auth)");
           return;
         }
-        router.replace('/(auth)');
-        return;
-      }
 
-      if (!token) {
-        if (isWeb) {
-          window.location.href = '/';
+        if (!token) {
+          if (isWeb) {
+            window.location.href = "/";
+            return;
+          }
+          router.replace("/(auth)");
           return;
         }
-        router.replace('/(auth)');
-        return;
-      }
 
-      await storage.setToken(token);
-      if (isWeb) {
-        window.location.href = '/';
-        return;
+        await storage.setToken(token);
+        if (isWeb) {
+          window.location.href = "/";
+          return;
+        }
+        router.replace("/(tabs)");
+      } catch (err) {
+        console.error("Auth callback failed:", err);
+        router.replace("/(auth)");
       }
-      router.replace('/(tabs)');
     };
 
     handleCallback();
   }, [token, error]);
 
   return (
-    <View style={styles.container}>
-      <ActivityIndicator size="large" color="#00aeff" />
+    <View style={[styles.container, { backgroundColor: theme.colors.background.default }]}>
+      <ActivityIndicator size="large" color={theme.colors.primary.main} />
     </View>
   );
-}
+};
+
+export default AuthCallback;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#1a1a2e',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

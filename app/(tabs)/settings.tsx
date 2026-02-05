@@ -1,8 +1,11 @@
-import { View, Switch, StyleSheet } from 'react-native';
-import { useTheme } from '@/contexts/ThemeContext';
-import { Screen, Card, ThemedText } from '@/components/ui';
+import type { FC } from "react";
+import { StyleSheet, Switch, View } from "react-native";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Screen } from "@/components/Screen/Screen";
+import { Card } from "@/components/Card/Card";
+import { ThemedText } from "@/components/ThemedText/ThemedText";
 
-export default function SettingsScreen() {
+const SettingsScreen: FC = () => {
   const { theme, isDark, toggleTheme } = useTheme();
 
   return (
@@ -23,12 +26,14 @@ export default function SettingsScreen() {
       </Card>
     </Screen>
   );
-}
+};
+
+export default SettingsScreen;
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });

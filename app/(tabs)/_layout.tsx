@@ -1,17 +1,26 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
+import type { ComponentProps, FC } from "react";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Tabs } from "expo-router";
+import { Pressable, StyleSheet } from "react-native";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
+interface TabBarIconProps {
+  name: ComponentProps<typeof FontAwesome>["name"];
   color: string;
-}) {
-  return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
 }
 
-export default function TabLayout() {
+const TabBarIcon: FC<TabBarIconProps> = (props) => {
+  return <FontAwesome size={24} style={styles.tabIcon} {...props} />;
+};
+
+const styles = StyleSheet.create({
+  tabIcon: {
+    marginBottom: -3,
+  },
+});
+
+const TabLayout: FC = () => {
   const { logout } = useAuth();
   const { theme } = useTheme();
 
@@ -29,14 +38,13 @@ export default function TabLayout() {
         },
         headerTintColor: theme.colors.text.primary,
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontWeight: "bold",
         },
-      }}
-    >
+      }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: "Home",
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
           headerRight: () => (
             <Pressable onPress={logout} style={{ marginRight: theme.spacing.md }}>
@@ -48,24 +56,26 @@ export default function TabLayout() {
       <Tabs.Screen
         name="stats"
         options={{
-          title: 'Stats',
+          title: "Stats",
           tabBarIcon: ({ color }) => <TabBarIcon name="bar-chart" color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: "Profile",
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: "Settings",
           tabBarIcon: ({ color }) => <TabBarIcon name="cog" color={color} />,
         }}
       />
     </Tabs>
   );
-}
+};
+
+export default TabLayout;

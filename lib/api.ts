@@ -1,26 +1,27 @@
-import { Platform } from 'react-native';
-import { config } from '../config';
-import { storage } from './storage';
-import type { User } from '../types';
+import { Platform } from "react-native";
+import { config } from "../config";
+import { storage } from "./storage";
+import { ApiError, NetworkError } from "@/types/errors";
+import type { User } from "@/types/User";
+import type { RequestOptions } from "@/types/api";
 
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+export async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+  let token: string | null = null;
 
-interface RequestOptions {
-  method?: HttpMethod;
-  body?: unknown;
-  headers?: Record<string, string>;
-}
+  try {
+    token = await storage.getToken();
+  } catch (error) {
+    console.error("Failed to retrieve auth token:", error);
+  }
 
-async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
-  const token = await storage.getToken();
-  const { method = 'GET', body, headers = {} } = options;
+  const { method = "GET", body, headers = {} } = options;
 
   const fetchOptions: RequestInit = {
     method,
     headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'X-Platform': Platform.OS,
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-Platform": Platform.OS,
       ...(token && { Authorization: `Bearer ${token}` }),
       ...headers,
     },
@@ -30,16 +31,35 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     fetchOptions.body = JSON.stringify(body);
   }
 
-  const response = await fetch(`${config.apiUrl}${endpoint}`, fetchOptions);
+  let response: Response;
 
-  if (!response.ok) {
-    throw new Error(`API Error: ${response.status}`);
+  try {
+    response = await fetch(`${config.apiUrl}${endpoint}`, fetchOptions);
+  } catch (error) {
+    throw new NetworkError(
+      error instanceof Error ? error.message : "Failed to connect to the server"
+    );
   }
 
-  return response.json();
+  if (!response.ok) {
+    let errorMessage: string | undefined;
+    try {
+      const errorBody = await response.json();
+      errorMessage = errorBody.message ?? errorBody.error;
+    } catch {
+      // Response body is not JSON
+    }
+    throw new ApiError(response.status, response.statusText, errorMessage);
+  }
+
+  try {
+    return await response.json();
+  } catch {
+    throw new ApiError(response.status, "Invalid JSON", "Failed to parse response");
+  }
 }
 
 export const api = {
-  getUser: () => request<User>('/api/auth/user'),
-  logout: () => request<{ message: string }>('/api/auth/logout', { method: 'POST' }),
+  getUser: () => request<User>("/api/auth/user"),
+  logout: () => request<{ message: string }>("/api/auth/logout", { method: "POST" }),
 };

@@ -1,18 +1,18 @@
-import { Platform } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import { Platform } from "react-native";
+import * as SecureStore from "expo-secure-store";
 
-const TOKEN_KEY = 'auth_token';
+const TOKEN_KEY = "auth_token";
 
 export const storage = {
   async getToken(): Promise<string | null> {
-    if (Platform.OS === 'web') {
+    if (Platform.OS === "web") {
       return localStorage.getItem(TOKEN_KEY);
     }
     return SecureStore.getItemAsync(TOKEN_KEY);
   },
 
   async setToken(token: string): Promise<void> {
-    if (Platform.OS === 'web') {
+    if (Platform.OS === "web") {
       localStorage.setItem(TOKEN_KEY, token);
       return;
     }
@@ -20,7 +20,7 @@ export const storage = {
   },
 
   async removeToken(): Promise<void> {
-    if (Platform.OS === 'web') {
+    if (Platform.OS === "web") {
       localStorage.removeItem(TOKEN_KEY);
       return;
     }

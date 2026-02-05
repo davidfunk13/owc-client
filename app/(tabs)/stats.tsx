@@ -1,8 +1,11 @@
-import { StyleSheet } from 'react-native';
-import { useTheme } from '@/contexts/ThemeContext';
-import { Screen, Card, ThemedText } from '@/components/ui';
+import type { FC } from "react";
+import { StyleSheet } from "react-native";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Screen } from "@/components/Screen/Screen";
+import { Card } from "@/components/Card/Card";
+import { ThemedText } from "@/components/ThemedText/ThemedText";
 
-export default function StatsScreen() {
+const StatsScreen: FC = () => {
   const { theme } = useTheme();
 
   return (
@@ -38,10 +41,12 @@ export default function StatsScreen() {
       </Card>
     </Screen>
   );
-}
+};
+
+export default StatsScreen;
 
 const styles = StyleSheet.create({
   placeholder: {
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

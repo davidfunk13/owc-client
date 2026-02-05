@@ -1,22 +1,25 @@
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
-import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
-import { Screen, ThemedText, Button } from '@/components/ui';
+import { useCallback, useState } from "react";
+import type { FC } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Screen } from "@/components/Screen/Screen";
+import { ThemedText } from "@/components/ThemedText/ThemedText";
+import { Button } from "@/components/Button/Button";
 
-export default function LoginScreen() {
+const LoginScreen: FC = () => {
   const { login } = useAuth();
   const { theme } = useTheme();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const handleLogin = async () => {
+  const handleLogin = useCallback(async () => {
     setIsLoggingIn(true);
     try {
       await login();
     } finally {
       setIsLoggingIn(false);
     }
-  };
+  }, [login]);
 
   return (
     <Screen style={styles.container}>
@@ -38,8 +41,7 @@ export default function LoginScreen() {
                 paddingVertical: theme.spacing.md,
                 borderRadius: theme.radius.sm,
               },
-            ]}
-          >
+            ]}>
             <ActivityIndicator color={theme.colors.text.primary} />
           </View>
         ) : (
@@ -48,15 +50,17 @@ export default function LoginScreen() {
       </View>
     </Screen>
   );
-}
+};
+
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   content: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   title: {
     fontSize: 48,
@@ -66,7 +70,7 @@ const styles = StyleSheet.create({
   },
   loadingButton: {
     minWidth: 200,
-    alignItems: 'center',
+    alignItems: "center",
     opacity: 0.7,
   },
 });
