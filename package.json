@@ -1,5 +1,5 @@
 {
-  "name": "ow2c-client",
+  "name": "owc-client",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {

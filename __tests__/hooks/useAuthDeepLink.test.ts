@@ -48,20 +48,20 @@ describe("useAuthDeepLink", () => {
     it("calls callback when receiving auth callback URL", () => {
       mockAddEventListener.mockImplementation((event, handler) => {
         if (event === "url") {
-          handler({ url: "ow2c://auth/callback?token=abc123" });
+          handler({ url: "owc://auth/callback?token=abc123" });
         }
         return { remove: mockRemove };
       });
 
       renderHook(() => useAuthDeepLink(mockCallback));
 
-      expect(mockCallback).toHaveBeenCalledWith("ow2c://auth/callback?token=abc123");
+      expect(mockCallback).toHaveBeenCalledWith("owc://auth/callback?token=abc123");
     });
 
     it("ignores non-auth-callback URLs", () => {
       mockAddEventListener.mockImplementation((event, handler) => {
         if (event === "url") {
-          handler({ url: "ow2c://some/other/path" });
+          handler({ url: "owc://some/other/path" });
         }
         return { remove: mockRemove };
       });
@@ -72,12 +72,12 @@ describe("useAuthDeepLink", () => {
     });
 
     it("checks initial URL on mount", async () => {
-      mockGetInitialURL.mockResolvedValue("ow2c://auth/callback?token=initial");
+      mockGetInitialURL.mockResolvedValue("owc://auth/callback?token=initial");
 
       renderHook(() => useAuthDeepLink(mockCallback));
 
       await new Promise((resolve) => setTimeout(resolve, 0));
-      expect(mockCallback).toHaveBeenCalledWith("ow2c://auth/callback?token=initial");
+      expect(mockCallback).toHaveBeenCalledWith("owc://auth/callback?token=initial");
     });
 
     it("removes listener on unmount", () => {

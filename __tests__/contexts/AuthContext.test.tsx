@@ -175,7 +175,7 @@ describe("AuthContext", () => {
 
         expect(mockWebBrowser.openAuthSessionAsync).toHaveBeenCalledWith(
           "http://auth.test/login",
-          "ow2c://auth/callback"
+          "owc://auth/callback"
         );
       });
 
@@ -183,7 +183,7 @@ describe("AuthContext", () => {
         jest.replaceProperty(Platform, "OS", "ios");
         mockWebBrowser.openAuthSessionAsync.mockResolvedValue({
           type: "success",
-          url: "ow2c://auth/callback?token=new-token",
+          url: "owc://auth/callback?token=new-token",
         });
         mockAuthService.parseCallbackUrl.mockReturnValue({ token: "new-token" });
         mockAuthService.fetchUser.mockResolvedValue(mockUser);
@@ -206,7 +206,7 @@ describe("AuthContext", () => {
         jest.replaceProperty(Platform, "OS", "ios");
         mockWebBrowser.openAuthSessionAsync.mockResolvedValue({
           type: "success",
-          url: "ow2c://auth/callback?error=access_denied",
+          url: "owc://auth/callback?error=access_denied",
         });
         mockAuthService.parseCallbackUrl.mockReturnValue({ error: "access_denied" });
 

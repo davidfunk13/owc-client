@@ -62,25 +62,25 @@ describe("auth", () => {
 
   describe("parseCallbackUrl", () => {
     it("extracts token from valid callback URL", () => {
-      const result = authService.parseCallbackUrl("ow2c://auth/callback?token=abc123");
+      const result = authService.parseCallbackUrl("owc://auth/callback?token=abc123");
       expect(result.token).toBe("abc123");
       expect(result.error).toBeUndefined();
     });
 
     it("extracts error from error callback URL", () => {
-      const result = authService.parseCallbackUrl("ow2c://auth/callback?error=access_denied");
+      const result = authService.parseCallbackUrl("owc://auth/callback?error=access_denied");
       expect(result.error).toBe("access_denied");
       expect(result.token).toBeUndefined();
     });
 
     it("extracts both token and error if present", () => {
-      const result = authService.parseCallbackUrl("ow2c://auth/callback?token=abc&error=partial");
+      const result = authService.parseCallbackUrl("owc://auth/callback?token=abc&error=partial");
       expect(result.token).toBe("abc");
       expect(result.error).toBe("partial");
     });
 
     it("returns empty for URL without query params", () => {
-      const result = authService.parseCallbackUrl("ow2c://auth/callback");
+      const result = authService.parseCallbackUrl("owc://auth/callback");
       expect(result.token).toBeUndefined();
       expect(result.error).toBeUndefined();
     });

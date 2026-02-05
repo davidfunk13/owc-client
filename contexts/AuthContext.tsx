@@ -86,7 +86,7 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         return;
       }
 
-      const redirectUrl = "ow2c://auth/callback";
+      const redirectUrl = "owc://auth/callback";
       const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUrl);
 
       if (result.type === "success" && result.url) {
