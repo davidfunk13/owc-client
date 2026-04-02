@@ -44,10 +44,10 @@ EXPO_PUBLIC_API_URL=
 EXPO_PUBLIC_API_URL_PRODUCTION=https://api.yoursite.com
 
 # Development - platform specific
-EXPO_PUBLIC_API_URL_DEV_WEB=http://localhost:8000
-EXPO_PUBLIC_API_URL_DEV_ANDROID_EMULATOR=http://10.0.2.2:8000
-EXPO_PUBLIC_API_URL_DEV_ANDROID_DEVICE=http://YOUR_LOCAL_IP:8000
-EXPO_PUBLIC_API_URL_DEV_IOS_SIMULATOR=http://localhost:8000
+EXPO_PUBLIC_API_URL_DEV_WEB=http://localhost
+EXPO_PUBLIC_API_URL_DEV_ANDROID_EMULATOR=http://10.0.2.2
+EXPO_PUBLIC_API_URL_DEV_ANDROID_DEVICE=http://YOUR_LOCAL_IP
+EXPO_PUBLIC_API_URL_DEV_IOS_SIMULATOR=http://localhost
 ```
 
 ### 3. Start Development Server
@@ -102,25 +102,23 @@ Example output: `192.168.0.132`
 Edit `.env.local` and set your IP:
 
 ```bash
-EXPO_PUBLIC_API_URL_DEV_ANDROID_DEVICE=http://192.168.0.132:8000
+EXPO_PUBLIC_API_URL_DEV_ANDROID_DEVICE=http://192.168.0.132
 ```
 
 Or use the override to apply to all platforms:
 
 ```bash
-EXPO_PUBLIC_API_URL=http://192.168.0.132:8000
+EXPO_PUBLIC_API_URL=http://192.168.0.132
 ```
 
-#### 3. Start the API Server on All Interfaces
-
-The API must listen on `0.0.0.0` (all network interfaces), not just `localhost`:
+#### 3. Start the API Server
 
 ```bash
 # In the owc-api directory
-composer dev:device
+./vendor/bin/sail up -d
 ```
 
-This runs `php artisan serve --host=0.0.0.0` which makes the API accessible from other devices on your network.
+Sail's Docker container binds to `0.0.0.0` by default, so the API is accessible from other devices on your network.
 
 #### 4. Start the Expo Dev Server
 

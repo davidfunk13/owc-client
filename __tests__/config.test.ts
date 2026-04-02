@@ -38,42 +38,42 @@ describe("config", () => {
     });
 
     it("returns web dev URL for web platform", () => {
-      process.env.EXPO_PUBLIC_API_URL_DEV_WEB = "http://localhost:8000";
+      process.env.EXPO_PUBLIC_API_URL_DEV_WEB = "http://localhost";
       jest.replaceProperty(Platform, "OS", "web");
 
       const { config } = require("../config");
 
-      expect(config.apiUrl).toBe("http://localhost:8000");
+      expect(config.apiUrl).toBe("http://localhost");
     });
 
     it("returns android emulator URL for android emulator", () => {
-      process.env.EXPO_PUBLIC_API_URL_DEV_ANDROID_EMULATOR = "http://10.0.2.2:8000";
+      process.env.EXPO_PUBLIC_API_URL_DEV_ANDROID_EMULATOR = "http://10.0.2.2";
       jest.replaceProperty(Platform, "OS", "android");
       mockIsDevice = false;
 
       const { config } = require("../config");
 
-      expect(config.apiUrl).toBe("http://10.0.2.2:8000");
+      expect(config.apiUrl).toBe("http://10.0.2.2");
     });
 
     it("returns ios simulator URL for ios simulator", () => {
-      process.env.EXPO_PUBLIC_API_URL_DEV_IOS_SIMULATOR = "http://localhost:8000";
+      process.env.EXPO_PUBLIC_API_URL_DEV_IOS_SIMULATOR = "http://localhost";
       jest.replaceProperty(Platform, "OS", "ios");
       mockIsDevice = false;
 
       const { config } = require("../config");
 
-      expect(config.apiUrl).toBe("http://localhost:8000");
+      expect(config.apiUrl).toBe("http://localhost");
     });
 
     it("returns android device URL for android real device", () => {
-      process.env.EXPO_PUBLIC_API_URL_DEV_ANDROID_DEVICE = "http://192.168.0.132:8000";
+      process.env.EXPO_PUBLIC_API_URL_DEV_ANDROID_DEVICE = "http://192.168.0.132";
       jest.replaceProperty(Platform, "OS", "android");
       mockIsDevice = true;
 
       const { config } = require("../config");
 
-      expect(config.apiUrl).toBe("http://192.168.0.132:8000");
+      expect(config.apiUrl).toBe("http://192.168.0.132");
     });
 
     it("throws error for ios real device without env var", () => {

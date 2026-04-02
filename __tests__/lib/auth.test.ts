@@ -17,7 +17,7 @@ jest.mock("../../lib/api", () => ({
 
 jest.mock("../../config", () => ({
   config: {
-    apiUrl: "http://localhost:8000",
+    apiUrl: "http://localhost",
   },
 }));
 
@@ -46,17 +46,17 @@ describe("auth", () => {
   describe("buildAuthUrl", () => {
     it("builds correct auth URL for android", () => {
       const url = authService.buildAuthUrl("android");
-      expect(url).toBe("http://localhost:8000/auth/battlenet/redirect?platform=android");
+      expect(url).toBe("http://localhost/auth/battlenet/redirect?platform=android");
     });
 
     it("builds correct auth URL for ios", () => {
       const url = authService.buildAuthUrl("ios");
-      expect(url).toBe("http://localhost:8000/auth/battlenet/redirect?platform=ios");
+      expect(url).toBe("http://localhost/auth/battlenet/redirect?platform=ios");
     });
 
     it("builds correct auth URL for web", () => {
       const url = authService.buildAuthUrl("web");
-      expect(url).toBe("http://localhost:8000/auth/battlenet/redirect?platform=web");
+      expect(url).toBe("http://localhost/auth/battlenet/redirect?platform=web");
     });
   });
 
