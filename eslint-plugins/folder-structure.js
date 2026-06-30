@@ -37,6 +37,11 @@ module.exports = {
           return {};
         }
 
+        // Skip declaration files — they're type-only re-exports for platform-extension splits
+        if (filename.endsWith(".d.ts")) {
+          return {};
+        }
+
         return {
           Program(node) {
             // Extract component name from path
@@ -57,9 +62,13 @@ module.exports = {
             }
 
             const [, folderName, fileName] = match;
-            const fileBaseName = fileName.replace(/\.(tsx?)$/, "");
+            // Strip extension and any platform suffix (.web, .ios, .android, .native)
+            // so ComponentName.web.tsx and ComponentName.ios.tsx still match folder ComponentName/
+            const fileBaseName = fileName
+              .replace(/\.(tsx?)$/, "")
+              .replace(/\.(web|ios|android|native)$/, "");
 
-            // Folder name should match file name
+            // Folder name should match file name (after stripping platform suffix)
             if (folderName !== fileBaseName) {
               context.report({
                 node,

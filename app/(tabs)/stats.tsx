@@ -1,9 +1,11 @@
 import type { FC } from "react";
 import { StyleSheet } from "react-native";
 import { useTheme } from "@/contexts/ThemeContext";
-import { Screen } from "@/components/Screen/Screen";
+import { Body } from "@/components/Body/Body";
+import { Caption } from "@/components/Caption/Caption";
 import { Card } from "@/components/Card/Card";
-import { ThemedText } from "@/components/ThemedText/ThemedText";
+import { Heading } from "@/components/Heading/Heading";
+import { Screen } from "@/components/Screen/Screen";
 
 const StatsScreen: FC = () => {
   const { theme } = useTheme();
@@ -11,33 +13,27 @@ const StatsScreen: FC = () => {
   return (
     <Screen scroll>
       <Card>
-        <ThemedText variant="title" style={{ marginBottom: theme.spacing.md }}>
-          Statistics
-        </ThemedText>
-        <ThemedText variant="secondary" style={styles.placeholder}>
+        <Heading style={{ marginBottom: theme.spacing.md }}>Statistics</Heading>
+        <Body muted style={styles.placeholder}>
           No stats available yet.
-        </ThemedText>
-        <ThemedText variant="hint" style={[styles.placeholder, { marginTop: theme.spacing.sm }]}>
+        </Body>
+        <Caption tiny style={[styles.placeholder, { marginTop: theme.spacing.sm }]}>
           Track games to see detailed statistics about your performance.
-        </ThemedText>
+        </Caption>
       </Card>
 
       <Card>
-        <ThemedText variant="title" style={{ marginBottom: theme.spacing.md }}>
-          Heroes
-        </ThemedText>
-        <ThemedText variant="secondary" style={styles.placeholder}>
+        <Heading style={{ marginBottom: theme.spacing.md }}>Heroes</Heading>
+        <Body muted style={styles.placeholder}>
           No hero data yet.
-        </ThemedText>
+        </Body>
       </Card>
 
       <Card>
-        <ThemedText variant="title" style={{ marginBottom: theme.spacing.md }}>
-          Maps
-        </ThemedText>
-        <ThemedText variant="secondary" style={styles.placeholder}>
+        <Heading style={{ marginBottom: theme.spacing.md }}>Maps</Heading>
+        <Body muted style={styles.placeholder}>
           No map data yet.
-        </ThemedText>
+        </Body>
       </Card>
     </Screen>
   );

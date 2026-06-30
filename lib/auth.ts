@@ -24,8 +24,8 @@ export function fetchUser(): Promise<User> {
 export async function logout(): Promise<void> {
   try {
     await api.logout();
-  } catch {
-    // Ignore logout errors - token might already be invalid
+  } catch (error) {
+    console.warn("Logout request failed; clearing local session anyway:", error);
   }
   await clearToken();
 }
@@ -37,7 +37,7 @@ export function buildAuthUrl(platform: string): string {
 export function parseCallbackUrl(url: string): CallbackParams {
   const parsed = Linking.parse(url);
   return {
-    token: parsed.queryParams?.token as string | undefined,
+    code: parsed.queryParams?.code as string | undefined,
     error: parsed.queryParams?.error as string | undefined,
   };
 }

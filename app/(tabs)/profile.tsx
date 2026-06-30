@@ -1,30 +1,48 @@
 import type { FC } from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { useCallback } from "react";
+import { StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
-import { Screen } from "@/components/Screen/Screen";
-import { Card } from "@/components/Card/Card";
-import { ThemedText } from "@/components/ThemedText/ThemedText";
+import { Body } from "@/components/Body/Body";
 import { Button } from "@/components/Button/Button";
+import { Card } from "@/components/Card/Card";
+import { Heading } from "@/components/Heading/Heading";
+import { Screen } from "@/components/Screen/Screen";
+import { Stat } from "@/components/Stat/Stat";
 
 const ProfileScreen: FC = () => {
   const { user, logout } = useAuth();
   const { theme } = useTheme();
   const battletag = user?.battletag;
 
+  const handleLogout = useCallback((): void => {
+    logout().catch((error) => {
+      console.error("Logout failed:", error);
+    });
+  }, [logout]);
+
   return (
     <Screen>
       <View style={[styles.profileHeader, { padding: theme.spacing.xl }]}>
         {user?.avatar ? (
           <Image
+            accessibilityLabel="Avatar"
             source={{ uri: user.avatar }}
+            contentFit="cover"
+            transition={200}
             style={[
               styles.avatar,
-              { borderRadius: theme.radius.full, marginBottom: theme.spacing.md },
+              {
+                borderRadius: theme.radius.full,
+                marginBottom: theme.spacing.md,
+                backgroundColor: theme.colors.background.paper,
+              },
             ]}
           />
         ) : (
           <View
+            accessibilityLabel="Avatar placeholder"
             style={[
               styles.avatarPlaceholder,
               {
@@ -33,25 +51,21 @@ const ProfileScreen: FC = () => {
                 marginBottom: theme.spacing.md,
               },
             ]}>
-            <ThemedText variant="stat" style={styles.avatarText}>
-              {battletag?.charAt(0).toUpperCase()}
-            </ThemedText>
+            <Stat style={styles.avatarText}>{battletag?.charAt(0).toUpperCase()}</Stat>
           </View>
         )}
-        <ThemedText variant="heading">{battletag}</ThemedText>
+        <Heading size="lg">{battletag}</Heading>
       </View>
 
       <Card>
-        <ThemedText variant="title" style={{ marginBottom: theme.spacing.md }}>
-          Account
-        </ThemedText>
+        <Heading style={{ marginBottom: theme.spacing.md }}>Account</Heading>
         <View style={[styles.infoRow, { paddingVertical: theme.spacing.sm }]}>
-          <ThemedText variant="secondary">Battle.net ID</ThemedText>
-          <ThemedText variant="body">{user?.battlenet_id || "--"}</ThemedText>
+          <Body muted>Battle.net ID</Body>
+          <Body>{user?.battlenet_id || "--"}</Body>
         </View>
       </Card>
 
-      <Button title="Sign Out" onPress={logout} variant="danger" />
+      <Button title="Sign Out" onPress={handleLogout} variant="danger" />
     </Screen>
   );
 };

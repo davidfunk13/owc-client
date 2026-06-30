@@ -13,7 +13,7 @@ jest.mock("../../config", () => ({
 }));
 
 import { storage } from "../../lib/storage";
-import { api, request } from "../../lib/api";
+import { api, request, setUnauthorizedHandler } from "../../lib/api";
 
 const mockStorage = storage as jest.Mocked<typeof storage>;
 
@@ -31,6 +31,7 @@ describe("api", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     global.fetch = jest.fn();
+    setUnauthorizedHandler(null);
   });
 
   describe("getUser", () => {
@@ -97,6 +98,59 @@ describe("api", () => {
         })
       );
       expect(result).toEqual({ message: "Logged out" });
+    });
+  });
+
+  describe("unauthorized handler", () => {
+    it("invokes the registered handler on a 401 response", async () => {
+      const handler = jest.fn();
+      setUnauthorizedHandler(handler);
+      mockStorage.getToken.mockResolvedValue("token");
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 401,
+        statusText: "Unauthorized",
+        json: () => Promise.resolve({ message: "Unauthenticated" }),
+      });
+
+      await expect(request("/api/test")).rejects.toThrow();
+      expect(handler).toHaveBeenCalled();
+    });
+
+    it("does not invoke the handler on a non-401 error", async () => {
+      const handler = jest.fn();
+      setUnauthorizedHandler(handler);
+      mockStorage.getToken.mockResolvedValue("token");
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: "Server Error",
+        json: () => Promise.resolve({ message: "boom" }),
+      });
+
+      await expect(request("/api/test")).rejects.toThrow();
+      expect(handler).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("exchangeCode", () => {
+    it("POSTs the code and returns the token", async () => {
+      mockStorage.getToken.mockResolvedValue(null);
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ token: "exchanged-token" }),
+      });
+
+      const result = await api.exchangeCode("one-time-code");
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        "http://test-api.com/api/auth/exchange",
+        expect.objectContaining({
+          method: "POST",
+          body: JSON.stringify({ code: "one-time-code" }),
+        })
+      );
+      expect(result).toEqual({ token: "exchanged-token" });
     });
   });
 

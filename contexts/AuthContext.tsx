@@ -1,12 +1,14 @@
 import type { FC, ReactNode } from "react";
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Platform } from "react-native";
-import * as WebBrowser from "expo-web-browser";
-import { router } from "expo-router";
 import { useQueryClient } from "@tanstack/react-query";
-import * as authService from "../lib/auth";
-import { useAuthDeepLink } from "../hooks/useAuthDeepLink";
-import type { AuthContextValue, AuthState } from "@/types/auth";
+import * as authService from "@/lib/auth";
+import { api, setUnauthorizedHandler } from "@/lib/api";
+import { openAuthSession } from "@/lib/openAuthSession";
+import { useAuthDeepLink } from "@/hooks/useAuthDeepLink";
+import { useUser } from "@/hooks/useUser";
+import { queryKeys } from "@/hooks/queryKeys";
+import type { AuthContextValue } from "@/types/auth";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -15,81 +17,83 @@ interface AuthProviderProps {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    token: null,
-    isLoading: true,
-    isAuthenticated: false,
-  });
-
   const queryClient = useQueryClient();
+  const [token, setToken] = useState<string | null>(null);
+  const [tokenChecked, setTokenChecked] = useState(false);
 
-  const fetchUser = useCallback(async (token: string) => {
-    try {
-      const user = await authService.fetchUser();
-      setState({
-        user,
-        token,
-        isLoading: false,
-        isAuthenticated: true,
-      });
-    } catch {
-      await authService.clearToken();
-      setState({
-        user: null,
-        token: null,
-        isLoading: false,
-        isAuthenticated: false,
-      });
-    }
-  }, []);
-
-  const handleAuthCallback = useCallback(
-    async (url: string) => {
-      const { token } = authService.parseCallbackUrl(url);
-
-      if (token) {
-        await authService.saveToken(token);
-        await fetchUser(token);
-        router.replace("/(tabs)");
-      }
-    },
-    [fetchUser]
-  );
+  const userQuery = useUser(token);
 
   useEffect(() => {
-    const checkAuth = async (): Promise<void> => {
-      try {
-        const token = await authService.getStoredToken();
-        if (token) {
-          await fetchUser(token);
-          return;
+    let cancelled = false;
+    authService
+      .getStoredToken()
+      .then((stored) => {
+        if (!cancelled) {
+          setToken(stored);
+          setTokenChecked(true);
         }
-        setState((prev) => ({ ...prev, isLoading: false }));
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error("Failed to check auth status:", error);
-        setState((prev) => ({ ...prev, isLoading: false }));
-      }
+        if (!cancelled) {
+          setTokenChecked(true);
+        }
+      });
+    return () => {
+      cancelled = true;
     };
+  }, []);
 
-    checkAuth();
-  }, [fetchUser]);
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      authService.clearToken().catch((error) => {
+        console.error("Failed to clear invalid token:", error);
+      });
+      setToken(null);
+      queryClient.removeQueries({ queryKey: queryKeys.auth.user() });
+    });
+    return () => setUnauthorizedHandler(null);
+  }, [queryClient]);
+
+  const exchangingRef = useRef<string | null>(null);
+
+  const completeAuth = useCallback(
+    async (code: string): Promise<void> => {
+      if (exchangingRef.current === code) {
+        return;
+      }
+      exchangingRef.current = code;
+      try {
+        const { token: newToken } = await api.exchangeCode(code);
+        await authService.saveToken(newToken);
+        setToken(newToken);
+        await queryClient.invalidateQueries({ queryKey: queryKeys.auth.user() });
+      } catch (error) {
+        exchangingRef.current = null;
+        throw error;
+      }
+    },
+    [queryClient]
+  );
+
+  const handleAuthCallback = useCallback(
+    async (url: string): Promise<void> => {
+      const { code } = authService.parseCallbackUrl(url);
+
+      if (code) {
+        await completeAuth(code);
+      }
+    },
+    [completeAuth]
+  );
 
   useAuthDeepLink(handleAuthCallback);
 
-  const login = useCallback(async () => {
+  const login = useCallback(async (): Promise<void> => {
     try {
       const authUrl = authService.buildAuthUrl(Platform.OS);
-
-      if (Platform.OS === "web") {
-        window.location.href = authUrl;
-        return;
-      }
-
-      const redirectUrl = "owc://auth/callback";
-      const result = await WebBrowser.openAuthSessionAsync(authUrl, redirectUrl);
-
-      if (result.type === "success" && result.url) {
+      const result = await openAuthSession(authUrl);
+      if (result.url) {
         await handleAuthCallback(result.url);
       }
     } catch (error) {
@@ -97,23 +101,33 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
   }, [handleAuthCallback]);
 
-  const logout = useCallback(async () => {
+  const logout = useCallback(async (): Promise<void> => {
     try {
       await authService.logout();
     } catch (error) {
       console.error("Logout API call failed:", error);
     }
+    setToken(null);
     queryClient.clear();
-    setState({
-      user: null,
-      token: null,
-      isLoading: false,
-      isAuthenticated: false,
-    });
   }, [queryClient]);
 
+  const isLoading = !tokenChecked || (!!token && userQuery.isLoading);
+  const user = token && userQuery.isSuccess ? userQuery.data : null;
+  const isAuthenticated = !!token && !!user;
+
   return (
-    <AuthContext.Provider value={{ ...state, login, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        isLoading,
+        isAuthenticated,
+        login,
+        logout,
+        completeAuth,
+      }}>
+      {children}
+    </AuthContext.Provider>
   );
 };
 

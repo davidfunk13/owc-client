@@ -1,7 +1,6 @@
 import type { FC, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
-import * as SecureStore from "expo-secure-store";
-import { Platform } from "react-native";
+import { storage } from "@/lib/storage";
 import { darkTheme, lightTheme } from "@/constants/theme";
 import type { ThemeContextType } from "@/types/theme";
 
@@ -11,28 +10,12 @@ interface ThemeProviderProps {
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
-const THEME_STORAGE_KEY = "theme";
-
-const getStoredTheme = async (): Promise<string | null> => {
-  if (Platform.OS === "web") {
-    return localStorage.getItem(THEME_STORAGE_KEY);
-  }
-  return SecureStore.getItemAsync(THEME_STORAGE_KEY);
-};
-
-const setStoredTheme = async (value: string): Promise<void> => {
-  if (Platform.OS === "web") {
-    localStorage.setItem(THEME_STORAGE_KEY, value);
-    return;
-  }
-  await SecureStore.setItemAsync(THEME_STORAGE_KEY, value);
-};
-
 export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
   const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
-    getStoredTheme()
+    storage
+      .getTheme()
       .then((stored) => {
         if (stored === null) {
           return;
@@ -44,10 +27,10 @@ export const ThemeProvider: FC<ThemeProviderProps> = ({ children }) => {
       });
   }, []);
 
-  const toggleTheme = () => {
+  const toggleTheme = (): void => {
     const newIsDark = !isDark;
     setIsDark(newIsDark);
-    setStoredTheme(newIsDark ? "dark" : "light").catch((error) => {
+    storage.setTheme(newIsDark ? "dark" : "light").catch((error) => {
       console.error("Failed to save theme preference:", error);
     });
   };

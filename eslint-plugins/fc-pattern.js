@@ -22,6 +22,11 @@ module.exports = {
         schema: [],
       },
       create(context) {
+        const filename = context.getFilename();
+        // Skip test files — mock components inside tests aren't subject to FC conventions
+        if (filename.includes("__tests__") || filename.includes(".test.")) {
+          return {};
+        }
         return {
           VariableDeclarator(node) {
             // Check if it's an arrow function

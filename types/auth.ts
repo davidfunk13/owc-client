@@ -10,9 +10,14 @@ export interface AuthState {
 export interface AuthContextValue extends AuthState {
   login: () => Promise<void>;
   logout: () => Promise<void>;
+  completeAuth: (code: string) => Promise<void>;
 }
 
 export interface CallbackParams {
-  token?: string;
+  code?: string;
   error?: string;
+}
+
+export interface OpenAuthSessionResult {
+  url: string | null;
 }

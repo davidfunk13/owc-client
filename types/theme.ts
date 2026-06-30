@@ -1,15 +1,17 @@
 export interface ColorPalette {
   background: { default: string; paper: string; highlight: string };
-  text: { primary: string; secondary: string; disabled: string; muted: string };
+  text: { primary: string; secondary: string; disabled: string; muted: string; onAccent: string };
   primary: { main: string };
   error: { main: string };
+  success: { main: string };
+  info: { main: string };
   border: { light: string };
 }
 
 export interface Theme {
   colors: ColorPalette;
   spacing: { xs: number; sm: number; md: number; lg: number; xl: number };
-  radius: { sm: number; md: number; full: number };
+  radius: { sm: number; md: number; lg: number; full: number };
   font: { xs: number; sm: number; md: number; lg: number; xl: number; xxl: number };
 }
 

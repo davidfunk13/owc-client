@@ -61,33 +61,33 @@ describe("auth", () => {
   });
 
   describe("parseCallbackUrl", () => {
-    it("extracts token from valid callback URL", () => {
-      const result = authService.parseCallbackUrl("owc://auth/callback?token=abc123");
-      expect(result.token).toBe("abc123");
+    it("extracts code from valid callback URL", () => {
+      const result = authService.parseCallbackUrl("owc://auth/callback?code=abc123");
+      expect(result.code).toBe("abc123");
       expect(result.error).toBeUndefined();
     });
 
     it("extracts error from error callback URL", () => {
       const result = authService.parseCallbackUrl("owc://auth/callback?error=access_denied");
       expect(result.error).toBe("access_denied");
-      expect(result.token).toBeUndefined();
+      expect(result.code).toBeUndefined();
     });
 
-    it("extracts both token and error if present", () => {
-      const result = authService.parseCallbackUrl("owc://auth/callback?token=abc&error=partial");
-      expect(result.token).toBe("abc");
+    it("extracts both code and error if present", () => {
+      const result = authService.parseCallbackUrl("owc://auth/callback?code=abc&error=partial");
+      expect(result.code).toBe("abc");
       expect(result.error).toBe("partial");
     });
 
     it("returns empty for URL without query params", () => {
       const result = authService.parseCallbackUrl("owc://auth/callback");
-      expect(result.token).toBeUndefined();
+      expect(result.code).toBeUndefined();
       expect(result.error).toBeUndefined();
     });
 
     it("handles web-style callback URLs", () => {
-      const result = authService.parseCallbackUrl("http://localhost:8081/?token=webtoken123");
-      expect(result.token).toBe("webtoken123");
+      const result = authService.parseCallbackUrl("http://localhost:8081/?code=webcode123");
+      expect(result.code).toBe("webcode123");
     });
   });
 
@@ -138,17 +138,22 @@ describe("auth", () => {
       expect(mockStorage.removeToken).toHaveBeenCalled();
     });
 
-    it("clears token even if API logout fails", async () => {
+    it("warns and clears token even if API logout fails", async () => {
+      const warnSpy = jest.spyOn(console, "warn").mockImplementation();
       mockApi.logout.mockRejectedValue(new Error("Network error"));
       await authService.logout();
       expect(mockApi.logout).toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalled();
       expect(mockStorage.removeToken).toHaveBeenCalled();
+      warnSpy.mockRestore();
     });
 
     it("clears token even if token already invalid", async () => {
+      const warnSpy = jest.spyOn(console, "warn").mockImplementation();
       mockApi.logout.mockRejectedValue(new Error("Unauthenticated"));
       await authService.logout();
       expect(mockStorage.removeToken).toHaveBeenCalled();
+      warnSpy.mockRestore();
     });
   });
 });

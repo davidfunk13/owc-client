@@ -1,7 +1,10 @@
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
+export type JsonPrimitive = string | number | boolean | null;
+export type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };
+
 export interface RequestOptions {
   method?: HttpMethod;
-  body?: unknown;
+  body?: JsonValue;
   headers?: Record<string, string>;
 }

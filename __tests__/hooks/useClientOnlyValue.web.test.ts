@@ -1,15 +1,10 @@
 import { renderHook, waitFor } from "@testing-library/react-native";
-
-// Import the web version directly
 import { useClientOnlyValue } from "../../hooks/useClientOnlyValue.web";
 
 describe("useClientOnlyValue (web)", () => {
-  it("uses useState with server value as initial state", () => {
-    // The hook initializes state with server value, then updates to client in useEffect
-    // In test environment, useEffect runs synchronously so we see the client value
+  it("returns the client value after the initial effect runs", () => {
     const { result } = renderHook(() => useClientOnlyValue("server", "client"));
 
-    // After effect runs, should have client value
     expect(result.current).toBe("client");
   });
 

@@ -1,36 +1,15 @@
-import { Platform } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import { storage } from "../../lib/storage";
 
 const mockSecureStore = SecureStore as jest.Mocked<typeof SecureStore>;
 
-describe("storage", () => {
+describe("storage (native)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // Reset localStorage mock
-    Object.defineProperty(global, "localStorage", {
-      value: {
-        getItem: jest.fn(),
-        setItem: jest.fn(),
-        removeItem: jest.fn(),
-      },
-      writable: true,
-    });
   });
 
   describe("getToken", () => {
-    it("uses localStorage on web", async () => {
-      jest.replaceProperty(Platform, "OS", "web");
-      (global.localStorage.getItem as jest.Mock).mockReturnValue("web-token");
-
-      const token = await storage.getToken();
-
-      expect(global.localStorage.getItem).toHaveBeenCalledWith("auth_token");
-      expect(token).toBe("web-token");
-    });
-
-    it("uses SecureStore on native", async () => {
-      jest.replaceProperty(Platform, "OS", "ios");
+    it("reads the token from SecureStore", async () => {
       mockSecureStore.getItemAsync.mockResolvedValue("native-token");
 
       const token = await storage.getToken();
@@ -39,8 +18,7 @@ describe("storage", () => {
       expect(token).toBe("native-token");
     });
 
-    it("returns null when no token stored", async () => {
-      jest.replaceProperty(Platform, "OS", "ios");
+    it("returns null when no token is stored", async () => {
       mockSecureStore.getItemAsync.mockResolvedValue(null);
 
       const token = await storage.getToken();
@@ -50,17 +28,7 @@ describe("storage", () => {
   });
 
   describe("setToken", () => {
-    it("uses localStorage on web", async () => {
-      jest.replaceProperty(Platform, "OS", "web");
-
-      await storage.setToken("new-token");
-
-      expect(global.localStorage.setItem).toHaveBeenCalledWith("auth_token", "new-token");
-    });
-
-    it("uses SecureStore on native", async () => {
-      jest.replaceProperty(Platform, "OS", "android");
-
+    it("writes the token to SecureStore", async () => {
       await storage.setToken("new-token");
 
       expect(mockSecureStore.setItemAsync).toHaveBeenCalledWith("auth_token", "new-token");
@@ -68,20 +36,29 @@ describe("storage", () => {
   });
 
   describe("removeToken", () => {
-    it("uses localStorage on web", async () => {
-      jest.replaceProperty(Platform, "OS", "web");
-
-      await storage.removeToken();
-
-      expect(global.localStorage.removeItem).toHaveBeenCalledWith("auth_token");
-    });
-
-    it("uses SecureStore on native", async () => {
-      jest.replaceProperty(Platform, "OS", "ios");
-
+    it("deletes the token from SecureStore", async () => {
       await storage.removeToken();
 
       expect(mockSecureStore.deleteItemAsync).toHaveBeenCalledWith("auth_token");
+    });
+  });
+
+  describe("getTheme", () => {
+    it("reads the theme from SecureStore", async () => {
+      mockSecureStore.getItemAsync.mockResolvedValue("dark");
+
+      const theme = await storage.getTheme();
+
+      expect(mockSecureStore.getItemAsync).toHaveBeenCalledWith("theme");
+      expect(theme).toBe("dark");
+    });
+  });
+
+  describe("setTheme", () => {
+    it("writes the theme to SecureStore", async () => {
+      await storage.setTheme("light");
+
+      expect(mockSecureStore.setItemAsync).toHaveBeenCalledWith("theme", "light");
     });
   });
 });

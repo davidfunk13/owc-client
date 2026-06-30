@@ -9,15 +9,12 @@ function getDevApiUrl(): string {
   if (Platform.OS === "web") {
     return process.env.EXPO_PUBLIC_API_URL_DEV_WEB ?? "";
   }
-  // Emulator
   if (Platform.OS === "android" && !Device.isDevice) {
     return process.env.EXPO_PUBLIC_API_URL_DEV_ANDROID_EMULATOR ?? "";
   }
-  // Real device
   if (Platform.OS === "android" && Device.isDevice) {
     return process.env.EXPO_PUBLIC_API_URL_DEV_ANDROID_DEVICE ?? "";
   }
-  // Simulator
   if (Platform.OS === "ios" && !Device.isDevice) {
     return process.env.EXPO_PUBLIC_API_URL_DEV_IOS_SIMULATOR ?? "";
   }

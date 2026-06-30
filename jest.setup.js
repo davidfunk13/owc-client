@@ -1,4 +1,5 @@
-// Mock expo-linking
+jest.mock("react-native-reanimated", () => ({}));
+
 jest.mock("expo-linking", () => ({
   parse: jest.fn((url) => {
     const urlObj = new URL(url, "http://localhost");
@@ -12,13 +13,11 @@ jest.mock("expo-linking", () => ({
   getInitialURL: jest.fn(() => Promise.resolve(null)),
 }));
 
-// Mock expo-web-browser
 jest.mock("expo-web-browser", () => ({
   openAuthSessionAsync: jest.fn(),
   openBrowserAsync: jest.fn(),
 }));
 
-// Mock expo-router
 jest.mock("expo-router", () => {
   const { Text, Pressable } = require("react-native");
   return {
@@ -33,26 +32,32 @@ jest.mock("expo-router", () => {
   };
 });
 
-// Mock expo-secure-store
 jest.mock("expo-secure-store", () => ({
   getItemAsync: jest.fn().mockResolvedValue(null),
   setItemAsync: jest.fn().mockResolvedValue(undefined),
   deleteItemAsync: jest.fn().mockResolvedValue(undefined),
 }));
 
-// Mock expo-device
 jest.mock("expo-device", () => ({
   isDevice: false,
 }));
 
-// Mock @tanstack/react-query
-jest.mock("@tanstack/react-query", () => ({
-  useQueryClient: jest.fn(() => ({
-    clear: jest.fn(),
-  })),
-  QueryClient: jest.fn(),
-  QueryClientProvider: ({ children }) => children,
-}));
+jest.mock("expo-image", () => {
+  const { View } = require("react-native");
+  const React = require("react");
+  return {
+    Image: ({ source, accessibilityLabel, contentFit, transition, placeholder, ...rest }) => {
+      const uri = typeof source === "object" && source !== null ? source.uri : source;
+      return React.createElement(View, {
+        accessibilityLabel,
+        accessibilityRole: "image",
+        ...rest,
+        "data-source-uri": uri,
+      });
+    },
+  };
+});
 
-// Global mocks
+require("react-native-gesture-handler/jestSetup");
+
 global.__DEV__ = true;

@@ -5,6 +5,12 @@ import { ApiError, NetworkError } from "@/types/errors";
 import type { User } from "@/types/User";
 import type { RequestOptions } from "@/types/api";
 
+let unauthorizedHandler: (() => void) | null = null;
+
+export function setUnauthorizedHandler(fn: (() => void) | null): void {
+  unauthorizedHandler = fn;
+}
+
 export async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   let token: string | null = null;
 
@@ -42,12 +48,16 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
   }
 
   if (!response.ok) {
+    if (response.status === 401) {
+      unauthorizedHandler?.();
+    }
+
     let errorMessage: string | undefined;
     try {
       const errorBody = await response.json();
       errorMessage = errorBody.message ?? errorBody.error;
     } catch {
-      // Response body is not JSON
+      // Body wasn't JSON; fall through with errorMessage undefined.
     }
     throw new ApiError(response.status, response.statusText, errorMessage);
   }
@@ -62,4 +72,6 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
 export const api = {
   getUser: () => request<User>("/api/auth/user"),
   logout: () => request<{ message: string }>("/api/auth/logout", { method: "POST" }),
+  exchangeCode: (code: string) =>
+    request<{ token: string }>("/api/auth/exchange", { method: "POST", body: { code } }),
 };

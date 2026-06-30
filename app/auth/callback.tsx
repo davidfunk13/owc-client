@@ -1,51 +1,31 @@
 import type { FC } from "react";
 import { useEffect } from "react";
-import { ActivityIndicator, Platform, StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { storage } from "@/lib/storage";
+import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const AuthCallback: FC = () => {
-  const { token, error } = useLocalSearchParams<{ token?: string; error?: string }>();
+  const { code, error } = useLocalSearchParams<{ code?: string; error?: string }>();
+  const { completeAuth } = useAuth();
   const { theme } = useTheme();
 
   useEffect(() => {
-    const handleCallback = async () => {
+    const handleCallback = async (): Promise<void> => {
       try {
-        const isWeb = Platform.OS === "web";
-
-        if (error) {
-          if (isWeb) {
-            window.location.href = "/";
-            return;
-          }
+        if (error || !code) {
           router.replace("/(auth)");
           return;
         }
-
-        if (!token) {
-          if (isWeb) {
-            window.location.href = "/";
-            return;
-          }
-          router.replace("/(auth)");
-          return;
-        }
-
-        await storage.setToken(token);
-        if (isWeb) {
-          window.location.href = "/";
-          return;
-        }
-        router.replace("/(tabs)");
+        await completeAuth(code);
       } catch (err) {
         console.error("Auth callback failed:", err);
         router.replace("/(auth)");
       }
     };
 
-    handleCallback();
-  }, [token, error]);
+    void handleCallback();
+  }, [code, error, completeAuth]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background.default }]}>

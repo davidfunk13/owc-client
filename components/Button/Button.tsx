@@ -29,6 +29,9 @@ const ButtonComponent: FC<ButtonProps> = ({
 
   return (
     <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityState={{ disabled }}
       style={[
         styles.base,
         { borderRadius: theme.radius.sm },
@@ -38,7 +41,7 @@ const ButtonComponent: FC<ButtonProps> = ({
       ]}
       onPress={onPress}
       disabled={disabled}>
-      <Text style={[styles.text, { color: theme.colors.text.primary, fontSize: theme.font.md }]}>
+      <Text style={[styles.text, { color: theme.colors.text.onAccent, fontSize: theme.font.md }]}>
         {title}
       </Text>
     </Pressable>

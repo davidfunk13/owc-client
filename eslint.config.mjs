@@ -19,6 +19,7 @@ export default [
     ignores: [
       'node_modules/**',
       '.expo/**',
+      'expo-env.d.ts',
       'android/**',
       'ios/**',
       'dist/**',

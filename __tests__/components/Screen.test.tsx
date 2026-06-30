@@ -26,7 +26,6 @@ describe("Screen", () => {
     );
 
     expect(getByText("Non-scrollable")).toBeTruthy();
-    // Check that it's not a ScrollView
     const scrollViews = UNSAFE_root.findAllByType("RCTScrollView" as never);
     expect(scrollViews).toHaveLength(0);
   });

@@ -1,6 +1,6 @@
 import { memo } from "react";
 import type { FC } from "react";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useTheme } from "@/contexts/ThemeContext";
 import type { CardProps } from "@/types/components";
 
@@ -10,8 +10,10 @@ const CardComponent: FC<CardProps> = ({ children, style }) => {
   return (
     <View
       style={[
+        styles.flat,
         {
           backgroundColor: theme.colors.background.paper,
+          borderColor: theme.colors.border.light,
           margin: theme.spacing.md,
           padding: theme.spacing.lg,
           borderRadius: theme.radius.md,
@@ -24,3 +26,9 @@ const CardComponent: FC<CardProps> = ({ children, style }) => {
 };
 
 export const Card = memo(CardComponent);
+
+const styles = StyleSheet.create({
+  flat: {
+    borderWidth: 1,
+  },
+});

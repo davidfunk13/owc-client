@@ -1,9 +1,10 @@
 import type { FC } from "react";
 import { StyleSheet, Switch, View } from "react-native";
 import { useTheme } from "@/contexts/ThemeContext";
-import { Screen } from "@/components/Screen/Screen";
+import { Body } from "@/components/Body/Body";
 import { Card } from "@/components/Card/Card";
-import { ThemedText } from "@/components/ThemedText/ThemedText";
+import { Heading } from "@/components/Heading/Heading";
+import { Screen } from "@/components/Screen/Screen";
 
 const SettingsScreen: FC = () => {
   const { theme, isDark, toggleTheme } = useTheme();
@@ -11,11 +12,9 @@ const SettingsScreen: FC = () => {
   return (
     <Screen>
       <Card>
-        <ThemedText variant="title" style={{ marginBottom: theme.spacing.md }}>
-          Appearance
-        </ThemedText>
+        <Heading style={{ marginBottom: theme.spacing.md }}>Appearance</Heading>
         <View style={styles.row}>
-          <ThemedText variant="body">Dark Mode</ThemedText>
+          <Body>Dark Mode</Body>
           <Switch
             value={isDark}
             onValueChange={toggleTheme}
