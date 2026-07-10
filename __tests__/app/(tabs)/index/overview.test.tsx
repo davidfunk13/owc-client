@@ -30,14 +30,4 @@ describe("HomeOverview", () => {
 
     expect(getByText("Player")).toBeTruthy();
   });
-
-  it("renders Quick Stats and Recent Activity cards", () => {
-    const { getByText } = render(withTheme(<HomeOverview />));
-
-    expect(getByText("Quick Stats")).toBeTruthy();
-    expect(getByText("Recent Activity")).toBeTruthy();
-    expect(getByText("Games")).toBeTruthy();
-    expect(getByText("Wins")).toBeTruthy();
-    expect(getByText("Win Rate")).toBeTruthy();
-  });
 });

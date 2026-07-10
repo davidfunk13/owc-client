@@ -8,14 +8,6 @@ describe("useClientOnlyValue (web)", () => {
     expect(result.current).toBe("client");
   });
 
-  it("returns client value", async () => {
-    const { result } = renderHook(() => useClientOnlyValue("server", "client"));
-
-    await waitFor(() => {
-      expect(result.current).toBe("client");
-    });
-  });
-
   it("updates when client value changes", async () => {
     const { result, rerender } = renderHook(
       (props: { server: string; client: string }) => useClientOnlyValue(props.server, props.client),

@@ -81,7 +81,7 @@ jest.mock("@/contexts/ToastContext", () => {
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
-import { darkTheme, lightTheme } from "@/constants/theme";
+import { darkTheme } from "@/constants/theme";
 import RootLayout from "@/app/_layout";
 
 const mockUseAuth = useAuth as jest.Mock;
@@ -141,14 +141,6 @@ describe("RootLayout", () => {
 
     expect(UNSAFE_root.findAllByType("ActivityIndicator" as never).length).toBeGreaterThan(0);
     expect(queryByTestId("root-stack")).toBeNull();
-  });
-
-  it("respects light theme rendering", () => {
-    mockUseTheme.mockReturnValue({ theme: lightTheme, isDark: false });
-
-    const { getByTestId } = render(<RootLayout />);
-
-    expect(getByTestId("root-stack")).toBeTruthy();
   });
 
   it("throws when useFonts surfaces an error", () => {

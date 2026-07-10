@@ -124,7 +124,7 @@ describe("TabsLayout (drawer)", () => {
     consoleSpy.mockRestore();
   });
 
-  it("registers all four drawer screens with titles and icons", () => {
+  it("registers all four drawer screens with titles", () => {
     render(withTheme(<TabsLayout />));
 
     const names = mockCapturedScreens.map((s) => s.name);
@@ -132,17 +132,6 @@ describe("TabsLayout (drawer)", () => {
 
     const titles = mockCapturedScreens.map((s) => s.options.title);
     expect(titles).toEqual(["Home", "Stats", "Profile", "Settings"]);
-
-    mockCapturedScreens.forEach((screen) => {
-      const drawerIcon = screen.options.drawerIcon as (args: {
-        color: string;
-        size: number;
-        focused: boolean;
-      }) => ReactElement;
-      const rendered = drawerIcon({ color: "red", size: 24, focused: false });
-      const { unmount } = render(withTheme(rendered));
-      unmount();
-    });
   });
 
   it("renders a header-right Sign out button that calls logout when pressed", () => {

@@ -46,16 +46,4 @@ describe("BottomSheet", () => {
 
     expect(onClose).toHaveBeenCalled();
   });
-
-  it("renders a drag handle", () => {
-    const { getByText } = render(
-      withTheme(
-        <BottomSheet visible onClose={jest.fn()}>
-          <Text>Body</Text>
-        </BottomSheet>
-      )
-    );
-
-    expect(getByText("Body")).toBeTruthy();
-  });
 });

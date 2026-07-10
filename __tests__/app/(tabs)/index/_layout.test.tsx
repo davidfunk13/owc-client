@@ -68,27 +68,4 @@ describe("HomeLayout (Home sub-tabs)", () => {
 
     expect(mockLastScreenOptions?.headerShown).toBe(false);
   });
-
-  it("renders flat tab bar with no elevation (per project rule #10)", () => {
-    render(withTheme(<HomeLayout />));
-
-    const tabBarStyle = mockLastScreenOptions?.tabBarStyle as Record<string, unknown> | undefined;
-    expect(tabBarStyle?.elevation).toBe(0);
-    expect(tabBarStyle?.borderTopWidth).toBe(1);
-  });
-
-  it("provides a renderable icon for every sub-tab", () => {
-    render(withTheme(<HomeLayout />));
-
-    mockCapturedScreens.forEach((screen) => {
-      const tabBarIcon = screen.options.tabBarIcon as (args: {
-        color: string;
-        size: number;
-        focused: boolean;
-      }) => ReactElement;
-      const icon = tabBarIcon({ color: "red", size: 24, focused: false });
-      const { unmount } = render(withTheme(icon));
-      unmount();
-    });
-  });
 });

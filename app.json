@@ -42,6 +42,20 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to use the camera to capture your Overwatch screen.",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to use the microphone when recording clips.",
+          "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos to import Overwatch screenshots."
+        }
       ]
     ],
     "experiments": {

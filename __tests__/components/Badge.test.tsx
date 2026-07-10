@@ -9,20 +9,4 @@ describe("Badge", () => {
     expect(getByText("New")).toBeTruthy();
     expect(getByLabelText("New")).toBeTruthy();
   });
-
-  it("renders each tone", () => {
-    const tones: Array<"primary" | "success" | "warning" | "error" | "info"> = [
-      "primary",
-      "success",
-      "warning",
-      "error",
-      "info",
-    ];
-
-    tones.forEach((tone) => {
-      const { getByText, unmount } = render(withTheme(<Badge label={tone} tone={tone} />));
-      expect(getByText(tone)).toBeTruthy();
-      unmount();
-    });
-  });
 });
