@@ -1,10 +1,14 @@
 import { memo } from "react";
 import type { FC } from "react";
-import { StyleSheet, View } from "react-native";
+import { KeyboardAvoidingView, StyleSheet } from "react-native";
 import type { KeyboardSafeViewProps } from "@/types/components";
 
 const KeyboardSafeViewComponent: FC<KeyboardSafeViewProps> = ({ children, style }) => {
-  return <View style={[styles.container, style]}>{children}</View>;
+  return (
+    <KeyboardAvoidingView behavior="height" style={[styles.container, style]}>
+      {children}
+    </KeyboardAvoidingView>
+  );
 };
 
 export const KeyboardSafeView = memo(KeyboardSafeViewComponent);

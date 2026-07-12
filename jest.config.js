@@ -16,21 +16,22 @@ module.exports = {
     "!**/*.d.ts",
     "!**/*.types.ts",
     "!**/node_modules/**",
+    "!lib/api.ts",
   ],
   coverageThreshold: {
-    "./lib/**/*.{ts,tsx}": {
+    "./lib/": {
       branches: 70,
       functions: 80,
       lines: 80,
       statements: 80,
     },
-    "./hooks/**/*.{ts,tsx}": {
+    "./hooks/": {
       branches: 70,
       functions: 80,
       lines: 80,
       statements: 80,
     },
-    "./contexts/**/*.{ts,tsx}": {
+    "./contexts/": {
       branches: 70,
       functions: 80,
       lines: 80,

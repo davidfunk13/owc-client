@@ -21,7 +21,7 @@ jest.mock("expo-router", () => {
     children: ReactElement;
     screenOptions?: Record<string, unknown>;
     initialRouteName?: string;
-  }) => {
+  }): ReactElement => {
     mockLastScreenOptions = screenOptions;
     mockLastInitialRouteName = initialRouteName;
     return React.createElement(View, { testID: "home-tabs" }, children);

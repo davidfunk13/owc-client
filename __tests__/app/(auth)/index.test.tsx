@@ -4,15 +4,24 @@ jest.mock("@/contexts/AuthContext", () => ({
   useAuth: jest.fn(),
 }));
 
+jest.mock("@/contexts/ToastContext", () => ({
+  useToast: jest.fn(),
+}));
+
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/contexts/ToastContext";
 import LoginScreen from "@/app/(auth)/index";
 import { withTheme } from "../../test-utils";
 
 const mockUseAuth = useAuth as jest.Mock;
+const mockUseToast = useToast as jest.Mock;
+const show = jest.fn();
 
 describe("LoginScreen", () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     mockUseAuth.mockReturnValue({ login: jest.fn().mockResolvedValue(undefined) });
+    mockUseToast.mockReturnValue({ show, dismiss: jest.fn(), toasts: [] });
   });
 
   it("renders the OW2C title and subtitle", () => {
@@ -63,6 +72,19 @@ describe("LoginScreen", () => {
 
     await waitFor(() => {
       expect(queryByRole("button", { name: "Login with Battle.net" })).not.toBeNull();
+    });
+  });
+
+  it("surfaces an error toast when login fails", async () => {
+    const login = jest.fn().mockRejectedValue(new Error("Browser error"));
+    mockUseAuth.mockReturnValue({ login });
+
+    const { getByRole } = render(withTheme(<LoginScreen />));
+
+    fireEvent.press(getByRole("button", { name: "Login with Battle.net" }));
+
+    await waitFor(() => {
+      expect(show).toHaveBeenCalledWith({ message: "Something went wrong", variant: "error" });
     });
   });
 });

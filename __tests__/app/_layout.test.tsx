@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactElement, ReactNode } from "react";
 import { render } from "@testing-library/react-native";
 
 let mockUseFontsValue: [boolean, Error | null] = [true, null];
@@ -37,7 +37,7 @@ jest.mock("expo-router", () => {
   }: {
     children: ReactNode;
     screenOptions?: unknown;
-  }) => (
+  }): ReactElement => (
     <View testID="root-stack" data-screen-options={JSON.stringify(screenOptions)}>
       {children}
     </View>

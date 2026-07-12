@@ -4,6 +4,19 @@ import { storage } from "./storage";
 import { ApiError, NetworkError } from "@/types/errors";
 import type { User } from "@/types/User";
 import type { RequestOptions } from "@/types/api";
+import type {
+  CreateGamePayload,
+  CreateRoundPayload,
+  Game,
+  GameFilters,
+  GameMap,
+  GameRound,
+  Hero,
+  SyncSnapshotsPayload,
+  UpdateGamePayload,
+  UpdateRoundPayload,
+} from "@/types/game";
+import type { Paginated } from "@/types/pagination";
 
 let unauthorizedHandler: (() => void) | null = null;
 
@@ -74,4 +87,42 @@ export const api = {
   logout: () => request<{ message: string }>("/api/auth/logout", { method: "POST" }),
   exchangeCode: (code: string) =>
     request<{ token: string }>("/api/auth/exchange", { method: "POST", body: { code } }),
+  getHeroes: () => request<Hero[]>("/api/heroes"),
+  getMaps: () => request<GameMap[]>("/api/maps"),
+  getGames: (filters?: GameFilters, page = 1) => {
+    const query = [
+      `page=${page}`,
+      ...Object.entries(filters ?? {})
+        .filter(([, value]) => value !== undefined && value !== "")
+        .map(([key, value]) => `${key}=${encodeURIComponent(String(value))}`),
+    ].join("&");
+    return request<Paginated<Game>>(`/api/games?${query}`);
+  },
+  getGame: (id: number) => request<{ data: Game }>(`/api/games/${id}`).then((res) => res.data),
+  createGame: (payload: CreateGamePayload) =>
+    request<{ data: Game }>("/api/games", { method: "POST", body: payload }).then(
+      (res) => res.data
+    ),
+  updateGame: (id: number, payload: UpdateGamePayload) =>
+    request<{ data: Game }>(`/api/games/${id}`, { method: "PUT", body: payload }).then(
+      (res) => res.data
+    ),
+  deleteGame: (id: number) =>
+    request<{ message: string }>(`/api/games/${id}`, { method: "DELETE" }),
+  createRound: (gameId: number, payload: CreateRoundPayload) =>
+    request<{ data: GameRound }>(`/api/games/${gameId}/rounds`, {
+      method: "POST",
+      body: payload,
+    }).then((res) => res.data),
+  updateRound: (id: number, payload: UpdateRoundPayload) =>
+    request<{ data: GameRound }>(`/api/rounds/${id}`, { method: "PUT", body: payload }).then(
+      (res) => res.data
+    ),
+  deleteRound: (id: number) =>
+    request<{ message: string }>(`/api/rounds/${id}`, { method: "DELETE" }),
+  syncSnapshots: (gameId: number, payload: SyncSnapshotsPayload) =>
+    request<{ data: Game }>(`/api/games/${gameId}/snapshots`, {
+      method: "PUT",
+      body: payload,
+    }).then((res) => res.data),
 };

@@ -1,6 +1,6 @@
 import { memo } from "react";
 import type { FC } from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 import { useTheme } from "@/contexts/ThemeContext";
 import type { ButtonProps } from "@/types/components";
 
@@ -9,9 +9,11 @@ const ButtonComponent: FC<ButtonProps> = ({
   onPress,
   variant = "primary",
   disabled = false,
+  loading = false,
   style,
 }) => {
   const { theme } = useTheme();
+  const isDisabled = disabled || loading;
 
   const variantStyle =
     variant === "primary"
@@ -31,19 +33,23 @@ const ButtonComponent: FC<ButtonProps> = ({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={title}
-      accessibilityState={{ disabled }}
+      accessibilityState={{ disabled: isDisabled, busy: loading }}
       style={[
         styles.base,
         { borderRadius: theme.radius.sm },
         variantStyle,
-        disabled && styles.disabled,
+        isDisabled && styles.disabled,
         style,
       ]}
       onPress={onPress}
-      disabled={disabled}>
-      <Text style={[styles.text, { color: theme.colors.text.onAccent, fontSize: theme.font.md }]}>
-        {title}
-      </Text>
+      disabled={isDisabled}>
+      {loading ? (
+        <ActivityIndicator color={theme.colors.text.onAccent} />
+      ) : (
+        <Text style={[styles.text, { color: theme.colors.text.onAccent, fontSize: theme.font.md }]}>
+          {title}
+        </Text>
+      )}
     </Pressable>
   );
 };

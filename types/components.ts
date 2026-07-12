@@ -8,6 +8,7 @@ import type {
   ViewStyle,
 } from "react-native";
 import type { Link } from "expo-router";
+import type { Game, GameRound } from "@/types/game";
 
 export type ButtonVariant = "primary" | "danger";
 
@@ -16,6 +17,7 @@ export interface ButtonProps {
   onPress: () => void;
   variant?: ButtonVariant;
   disabled?: boolean;
+  loading?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -66,10 +68,6 @@ export interface StatProps {
   style?: StyleProp<TextStyle>;
 }
 
-export interface DividerProps {
-  style?: StyleProp<ViewStyle>;
-}
-
 export interface EmptyStateProps {
   title: string;
   description?: string;
@@ -99,19 +97,12 @@ export interface InputProps {
   keyboardType?: "default" | "email-address" | "numeric" | "phone-pad" | "url" | "decimal-pad";
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
   autoCorrect?: boolean;
+  autoFocus?: boolean;
   multiline?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
 export interface SwitchProps {
-  value: boolean;
-  onValueChange: (value: boolean) => void;
-  label?: string;
-  disabled?: boolean;
-  style?: StyleProp<ViewStyle>;
-}
-
-export interface CheckboxProps {
   value: boolean;
   onValueChange: (value: boolean) => void;
   label?: string;
@@ -135,6 +126,20 @@ export interface SelectProps {
   style?: StyleProp<ViewStyle>;
 }
 
+export interface ComboboxProps {
+  value: SelectValue | null;
+  onChange: (value: SelectValue | null) => void;
+  options: SelectOption[];
+  placeholder?: string;
+  searchPlaceholder?: string;
+  emptyText?: string;
+  clearable?: boolean;
+  disabled?: boolean;
+  label?: string;
+  loading?: boolean;
+  style?: StyleProp<ViewStyle>;
+}
+
 export type BadgeTone = "neutral" | "primary" | "success" | "warning" | "error" | "info";
 
 export interface BadgeProps {
@@ -147,16 +152,6 @@ export interface AvatarProps {
   source?: string;
   fallback?: string;
   size?: number;
-  style?: StyleProp<ViewStyle>;
-}
-
-export interface ListItemProps {
-  title: string;
-  description?: string;
-  leading?: ReactNode;
-  trailing?: ReactNode;
-  onPress?: () => void;
-  disabled?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -190,4 +185,91 @@ export type ExternalLinkProps = Omit<ComponentProps<typeof Link>, "href"> & { hr
 
 export interface EditScreenInfoProps {
   path: string;
+}
+
+export type SegmentedTone = "primary" | "success" | "error" | "neutral";
+
+export interface SegmentedOption {
+  label: string;
+  value: SelectValue;
+  tone?: SegmentedTone;
+}
+
+export interface SegmentedControlProps {
+  value: SelectValue | null;
+  onChange: (value: SelectValue | null) => void;
+  options: SegmentedOption[];
+  allowDeselect?: boolean;
+  label?: string;
+  disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
+}
+
+export interface ChipOption {
+  label: string;
+  value: SelectValue;
+}
+
+export interface ChipGroupProps {
+  values: SelectValue[];
+  onChange: (values: SelectValue[]) => void;
+  options: ChipOption[];
+  primaryValue?: SelectValue | null;
+  showPrimaryBadge?: boolean;
+  label?: string;
+  disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
+}
+
+export interface CounterProps {
+  value: number;
+  onChange: (value: number) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+  label?: string;
+  disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
+}
+
+export interface FieldProps {
+  label?: string;
+  hint?: string;
+  required?: boolean;
+  children: ReactNode;
+  style?: StyleProp<ViewStyle>;
+}
+
+export type LogGameLayout = "sheet" | "page";
+
+export interface LogGameFormProps {
+  layout?: LogGameLayout;
+  game?: Game;
+  onDone?: () => void;
+}
+
+export interface GameRowProps {
+  game: Game;
+  onPress?: (id: number) => void;
+}
+
+export interface RoundFormProps {
+  game: Game;
+  round?: GameRound;
+  onDone?: () => void;
+}
+
+export interface RoundCardProps {
+  round: GameRound;
+  onEdit?: (round: GameRound) => void;
+  onDelete?: (round: GameRound) => void;
+}
+
+export interface SnapshotFormProps {
+  game: Game;
+  onDone?: () => void;
+}
+
+export interface SnapshotSummaryProps {
+  game: Game;
 }

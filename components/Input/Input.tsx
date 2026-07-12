@@ -19,6 +19,7 @@ const InputComponent: FC<InputProps> = ({
   keyboardType = "default",
   autoCapitalize = "sentences",
   autoCorrect = true,
+  autoFocus = false,
   multiline = false,
   style,
 }) => {
@@ -39,6 +40,7 @@ const InputComponent: FC<InputProps> = ({
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
         autoCorrect={autoCorrect}
+        autoFocus={autoFocus}
         multiline={multiline}
         value={value}
         style={[

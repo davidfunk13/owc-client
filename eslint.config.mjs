@@ -9,7 +9,6 @@ import fcPattern from './eslint-plugins/fc-pattern.js';
 import typesLocation from './eslint-plugins/types-location.js';
 import stylingRules from './eslint-plugins/styling-rules.js';
 import folderStructure from './eslint-plugins/folder-structure.js';
-import functionTypes from './eslint-plugins/function-types.js';
 import errorHandling from './eslint-plugins/error-handling.js';
 import performanceRules from './eslint-plugins/performance-rules.js';
 
@@ -89,7 +88,6 @@ export default [
       'types-location': typesLocation,
       'styling-rules': stylingRules,
       'folder-structure': folderStructure,
-      'function-types': functionTypes,
       'error-handling': errorHandling,
       'performance-rules': performanceRules,
     },
@@ -107,8 +105,16 @@ export default [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
       ],
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/explicit-function-return-type': [
+        'error',
+        {
+          allowExpressions: true,
+          allowTypedFunctionExpressions: true,
+          allowHigherOrderFunctions: true,
+          allowDirectConstAssertionInArrowFunctions: true,
+        },
+      ],
+      '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': [
         'error',
         { prefer: 'type-imports', fixStyle: 'separate-type-imports' },
@@ -163,9 +169,6 @@ export default [
       // Custom rules - Folder structure
       'folder-structure/component-folder-structure': 'error',
       'folder-structure/no-barrel-exports': 'error',
-
-      // Custom rules - Function types
-      'function-types/require-function-return-type': 'error',
 
       // Custom rules - Error handling
       'error-handling/require-promise-catch': 'error',

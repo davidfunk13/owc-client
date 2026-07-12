@@ -34,6 +34,20 @@ describe("Button", () => {
     const { getByRole } = render(withTheme(<Button title="Locked" onPress={() => {}} disabled />));
 
     const button = getByRole("button", { name: "Locked" });
-    expect(button.props.accessibilityState).toEqual({ disabled: true });
+    expect(button.props.accessibilityState).toEqual({ disabled: true, busy: false });
+  });
+
+  it("shows a spinner and blocks presses while loading", () => {
+    const onPress = jest.fn();
+    const { getByRole, UNSAFE_root } = render(
+      withTheme(<Button title="Saving" onPress={onPress} loading />)
+    );
+
+    const button = getByRole("button", { name: "Saving" });
+    expect(button.props.accessibilityState).toEqual({ disabled: true, busy: true });
+    expect(UNSAFE_root.findAllByType("ActivityIndicator" as never).length).toBeGreaterThan(0);
+
+    fireEvent.press(button);
+    expect(onPress).not.toHaveBeenCalled();
   });
 });

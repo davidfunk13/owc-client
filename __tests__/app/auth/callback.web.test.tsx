@@ -1,4 +1,4 @@
-import { render, waitFor } from "@testing-library/react-native";
+import { fireEvent, render, waitFor } from "@testing-library/react-native";
 import { useLocalSearchParams } from "expo-router";
 
 jest.mock("expo-router", () => ({
@@ -56,43 +56,38 @@ describe("AuthCallback (web)", () => {
     });
   });
 
-  it("redirects home when an error param is present", async () => {
+  it("shows a failure state instead of silently bouncing when an error param is present", async () => {
     mockUseLocalSearchParams.mockReturnValue({ error: "access_denied" });
 
-    render(withTheme(<AuthCallback />));
+    const { findByText } = render(withTheme(<AuthCallback />));
 
-    await waitFor(() => {
-      expect(global.window.location.href).toBe("/");
-    });
+    expect(await findByText("Sign-in failed")).toBeTruthy();
+    expect(await findByText("Sign-in was cancelled or failed.")).toBeTruthy();
+    expect(global.window.location.href).toBe("");
     expect(mockExchangeCode).not.toHaveBeenCalled();
     expect(mockedStorage.setToken).not.toHaveBeenCalled();
   });
 
-  it("redirects home when no code is present", async () => {
+  it("shows a failure state when no code is present", async () => {
     mockUseLocalSearchParams.mockReturnValue({});
 
-    render(withTheme(<AuthCallback />));
+    const { findByText } = render(withTheme(<AuthCallback />));
 
-    await waitFor(() => {
-      expect(global.window.location.href).toBe("/");
-    });
+    expect(await findByText("Sign-in failed")).toBeTruthy();
     expect(mockExchangeCode).not.toHaveBeenCalled();
     expect(mockedStorage.setToken).not.toHaveBeenCalled();
   });
 
-  it("logs an error and still redirects home when the exchange fails", async () => {
-    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+  it("shows the error and offers a way back when the exchange fails", async () => {
     mockUseLocalSearchParams.mockReturnValue({ code: "abc123" });
     mockExchangeCode.mockRejectedValue(new Error("Exchange error"));
 
-    render(withTheme(<AuthCallback />));
+    const { findByText, getByRole } = render(withTheme(<AuthCallback />));
 
-    await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("Auth callback failed:", expect.any(Error));
-    });
-    await waitFor(() => {
-      expect(global.window.location.href).toBe("/");
-    });
-    consoleSpy.mockRestore();
+    expect(await findByText("Sign-in failed")).toBeTruthy();
+    expect(global.window.location.href).toBe("");
+
+    fireEvent.press(getByRole("button", { name: "Back to sign in" }));
+    expect(global.window.location.href).toBe("/");
   });
 });

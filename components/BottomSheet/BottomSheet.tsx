@@ -4,6 +4,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Pressable, Modal as RNModal, StyleSheet, View } from "react-native";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Heading } from "@/components/Heading/Heading";
+import { KeyboardSafeView } from "@/components/KeyboardSafeView/KeyboardSafeView";
 import type { BottomSheetProps } from "@/types/components";
 
 const BottomSheetComponent: FC<BottomSheetProps> = ({
@@ -17,7 +18,8 @@ const BottomSheetComponent: FC<BottomSheetProps> = ({
 
   return (
     <RNModal animationType="slide" onRequestClose={onClose} transparent visible={visible}>
-      <View style={[styles.backdrop, { backgroundColor: theme.colors.background.highlight }]}>
+      <KeyboardSafeView
+        style={[styles.backdrop, { backgroundColor: theme.colors.background.highlight }]}>
         <Pressable
           accessibilityLabel="Close bottom sheet"
           accessibilityRole="button"
@@ -60,7 +62,7 @@ const BottomSheetComponent: FC<BottomSheetProps> = ({
           </View>
           <View>{children}</View>
         </View>
-      </View>
+      </KeyboardSafeView>
     </RNModal>
   );
 };

@@ -90,14 +90,10 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   useAuthDeepLink(handleAuthCallback);
 
   const login = useCallback(async (): Promise<void> => {
-    try {
-      const authUrl = authService.buildAuthUrl(Platform.OS);
-      const result = await openAuthSession(authUrl);
-      if (result.url) {
-        await handleAuthCallback(result.url);
-      }
-    } catch (error) {
-      console.error("Login failed:", error);
+    const authUrl = authService.buildAuthUrl(Platform.OS);
+    const result = await openAuthSession(authUrl);
+    if (result.url) {
+      await handleAuthCallback(result.url);
     }
   }, [handleAuthCallback]);
 

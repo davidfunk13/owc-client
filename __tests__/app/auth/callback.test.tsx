@@ -10,20 +10,28 @@ jest.mock("@/contexts/AuthContext", () => ({
   useAuth: jest.fn(),
 }));
 
+jest.mock("@/contexts/ToastContext", () => ({
+  useToast: jest.fn(),
+}));
+
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/contexts/ToastContext";
 import AuthCallback from "@/app/auth/callback";
 import { withTheme } from "../../test-utils";
 
 const mockUseLocalSearchParams = useLocalSearchParams as jest.Mock;
 const mockRouter = router as jest.Mocked<typeof router>;
 const mockUseAuth = useAuth as jest.Mock;
+const mockUseToast = useToast as jest.Mock;
 const completeAuth = jest.fn();
+const show = jest.fn();
 
 describe("AuthCallback (native)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     completeAuth.mockResolvedValue(undefined);
     mockUseAuth.mockReturnValue({ completeAuth });
+    mockUseToast.mockReturnValue({ show, dismiss: jest.fn(), toasts: [] });
   });
 
   it("completes auth with the code and lets the guard navigate on success", async () => {
@@ -59,19 +67,17 @@ describe("AuthCallback (native)", () => {
     expect(completeAuth).not.toHaveBeenCalled();
   });
 
-  it("logs an error and routes to auth when completeAuth throws", async () => {
-    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+  it("surfaces an error toast and routes to auth when completeAuth throws", async () => {
     mockUseLocalSearchParams.mockReturnValue({ code: "abc123" });
     completeAuth.mockRejectedValue(new Error("Auth error"));
 
     render(withTheme(<AuthCallback />));
 
     await waitFor(() => {
-      expect(consoleSpy).toHaveBeenCalledWith("Auth callback failed:", expect.any(Error));
+      expect(show).toHaveBeenCalledWith({ message: "Something went wrong", variant: "error" });
     });
     await waitFor(() => {
       expect(mockRouter.replace).toHaveBeenCalledWith("/(auth)");
     });
-    consoleSpy.mockRestore();
   });
 });

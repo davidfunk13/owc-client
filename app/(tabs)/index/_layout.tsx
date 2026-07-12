@@ -4,6 +4,8 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
 import { useTheme } from "@/contexts/ThemeContext";
 
+export { ErrorBoundary } from "expo-router";
+
 interface TabIconProps {
   name: ComponentProps<typeof FontAwesome>["name"];
   color: ColorValue;

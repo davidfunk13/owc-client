@@ -15,3 +15,6 @@ export const defaultErrorMessage = (error: MutationFeedbackError): string => {
   }
   return "Something went wrong";
 };
+
+export const errorMessage = (error: unknown): string =>
+  defaultErrorMessage(error instanceof Error ? error : new Error("Something went wrong"));

@@ -154,6 +154,36 @@ describe("api", () => {
     });
   });
 
+  describe("getGames", () => {
+    const calledUrl = (): string => (global.fetch as jest.Mock).mock.calls[0][0];
+
+    beforeEach(() => {
+      mockStorage.getToken.mockResolvedValue("token");
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ data: [], links: {}, meta: {} }),
+      });
+    });
+
+    it("requests page 1 with no filters", async () => {
+      await api.getGames();
+
+      expect(calledUrl()).toBe("http://test-api.com/api/games?page=1");
+    });
+
+    it("drops undefined and empty-string filter values", async () => {
+      await api.getGames({ result: "win", role: undefined, search: "" }, 2);
+
+      expect(calledUrl()).toBe("http://test-api.com/api/games?page=2&result=win");
+    });
+
+    it("url-encodes filter values", async () => {
+      await api.getGames({ search: "a & b" });
+
+      expect(calledUrl()).toBe("http://test-api.com/api/games?page=1&search=a%20%26%20b");
+    });
+  });
+
   describe("request", () => {
     it("serializes body as JSON when provided", async () => {
       mockStorage.getToken.mockResolvedValue("token");

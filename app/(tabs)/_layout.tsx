@@ -7,9 +7,11 @@ import {
   DrawerContentScrollView,
   DrawerItemList,
 } from "expo-router/drawer";
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
+
+export { ErrorBoundary } from "expo-router";
 
 const PERMANENT_BREAKPOINT = 1024;
 
@@ -74,6 +76,55 @@ const TabsLayout: FC = () => {
     });
   };
 
+  const screens = [
+    <Drawer.Screen
+      key="index"
+      name="index"
+      options={{
+        title: "Home",
+        drawerIcon: ({ color, size }) => <DrawerIcon name="home" color={color} size={size} />,
+      }}
+    />,
+    ...(Platform.OS === "web"
+      ? [
+          <Drawer.Screen
+            key="log-game"
+            name="log-game"
+            options={{
+              title: "Log game",
+              drawerIcon: ({ color, size }) => (
+                <DrawerIcon name="plus-circle" color={color} size={size} />
+              ),
+            }}
+          />,
+        ]
+      : []),
+    <Drawer.Screen
+      key="stats"
+      name="stats"
+      options={{
+        title: "Stats",
+        drawerIcon: ({ color, size }) => <DrawerIcon name="bar-chart" color={color} size={size} />,
+      }}
+    />,
+    <Drawer.Screen
+      key="profile"
+      name="profile"
+      options={{
+        title: "Profile",
+        drawerIcon: ({ color, size }) => <DrawerIcon name="user" color={color} size={size} />,
+      }}
+    />,
+    <Drawer.Screen
+      key="settings"
+      name="settings"
+      options={{
+        title: "Settings",
+        drawerIcon: ({ color, size }) => <DrawerIcon name="cog" color={color} size={size} />,
+      }}
+    />,
+  ];
+
   return (
     <Drawer
       drawerContent={(props) => <DrawerContent {...props} />}
@@ -107,36 +158,7 @@ const TabsLayout: FC = () => {
           backgroundColor: theme.colors.background.default,
         },
       }}>
-      <Drawer.Screen
-        name="index"
-        options={{
-          title: "Home",
-          drawerIcon: ({ color, size }) => <DrawerIcon name="home" color={color} size={size} />,
-        }}
-      />
-      <Drawer.Screen
-        name="stats"
-        options={{
-          title: "Stats",
-          drawerIcon: ({ color, size }) => (
-            <DrawerIcon name="bar-chart" color={color} size={size} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          drawerIcon: ({ color, size }) => <DrawerIcon name="user" color={color} size={size} />,
-        }}
-      />
-      <Drawer.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          drawerIcon: ({ color, size }) => <DrawerIcon name="cog" color={color} size={size} />,
-        }}
-      />
+      {screens}
     </Drawer>
   );
 };

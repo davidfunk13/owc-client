@@ -362,8 +362,7 @@ describe("AuthContext", () => {
         expect(mockAuthService.saveToken).not.toHaveBeenCalled();
       });
 
-      it("handles error when login throws", async () => {
-        const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+      it("propagates the error when login fails so the caller can surface it", async () => {
         mockOpenAuthSession.mockRejectedValue(new Error("Browser error"));
 
         const wrapper = buildWrapper();
@@ -373,12 +372,7 @@ describe("AuthContext", () => {
           expect(result.current.isLoading).toBe(false);
         });
 
-        await act(async () => {
-          await result.current.login();
-        });
-
-        expect(consoleSpy).toHaveBeenCalledWith("Login failed:", expect.any(Error));
-        consoleSpy.mockRestore();
+        await expect(result.current.login()).rejects.toThrow("Browser error");
       });
     });
 
